@@ -1,11 +1,11 @@
 import static java.lang.Thread.currentThread;
 
-public class main {
+public class Main {
         public static void main(String[] args) {
             int tab[] = new int[50];
 
             for (int i = 0; i < 50; i++) {
-                tab[i] = (int)(Math.random() * 100;
+                tab[i] = (int)(Math.random() * 100);
                 System.out.println(tab[i] + " ");
 
             }
