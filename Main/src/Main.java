@@ -21,7 +21,7 @@ public class Main {
         t1.start();
         t2.start();
 
-        // Firele lui Costriba Serafim
+        //  Firele lui Costriba Serafim
         SerafimThread f1 = new SerafimThread(0, n - 1, tab, false, "Costriba Serafim");
         SerafimThread f2 = new SerafimThread(0, n - 1, tab, true, "Costriba Serafim");
         Thread t3 = new Thread(f1, "Serafim1");
@@ -37,7 +37,7 @@ public class Main {
         fir1.start();
         fir2.start();
 
-        System.out.println("\n>>> Firele au fost pornite! (fără join / fără sincronizare)\n");
+        System.out.println("\n>>> Firele au fost pornite! \n");
     }
 }
 
