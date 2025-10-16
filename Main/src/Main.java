@@ -31,9 +31,6 @@ public class Main {
         Thread1 fir1 = new Thread1(0, 99, tab, true);
         Thread1 fir2 = new Thread1(0, 99, tab, false);
 
-        Thread t5 = new Thread(fir1);
-        Thread t6 = new Thread(fir2);
-
         fir1.start();
         fir2.start();
 
