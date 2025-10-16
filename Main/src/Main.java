@@ -2,22 +2,32 @@ import static java.lang.Thread.currentThread;
 
 public class Main {
     public static void main(String[] args) {
-        int tab[] = new int[50];
+        int tab[] = new int[100];
 
-        for (int i = 0; i < 50; i++) {
+        for (int i = 0; i < 99; i++) {
             tab[i] = (int)(Math.random() * 100);
             System.out.print(tab[i] + " ");
         }
 
         System.out.println();
-        Suma fir = new Suma(0, 49, tab, true);
-        Suma sec = new Suma(0, 49, tab, false);
+        Suma fir = new Suma(0, 99, tab, true);
+        Suma sec = new Suma(0, 99, tab, false);
 
         Thread t1 = new Thread(fir);
         Thread t2 = new Thread(sec);
 
         t1.start();
         t2.start();
+
+        SerafimThread f1 = new SerafimThread(0, 99, tab, false);
+        SerafimThread f2 = new SerafimThread(0, 99, tab, true);
+
+        Thread t3 = new Thread(f1, "Firul1");
+        Thread t4 = new Thread(f2, "Firul2");
+
+        t3.start();
+        t4.start();
+
     }
 }
 
@@ -68,6 +78,92 @@ class Suma implements Runnable {
                 suma2 = 0;
                 contor2 = 0;
             }
+        }
+    }
+}
+
+class SerafimThread implements Runnable {
+    int from;
+    int to;
+    int[] tab;
+    boolean revers;
+
+    public SerafimThread(int from, int to, int[] tab, boolean revers) {
+        this.from = from;
+        this.to = to;
+        this.tab = tab;
+        this.revers = revers;
+    }
+
+    public void run() {
+        int S1 = 0;        // prima valoare pară
+        int S2 = 0;        // a doua valoare pară
+        int k = 0;         // contor pentru valorile pare găsite
+        int sumaDoua = 0;  // suma a două perechi consecutive
+        int count = 0;     // marchează dacă avem o pereche sau două
+
+        if (!revers) {
+            for (int i = from; i <= to; i++) {
+                if (tab[i] % 2 == 0) {
+                    if (k == 0) S1 = tab[i];
+                    else S2 = tab[i];
+                    k++;
+
+                    if (k == 2) {
+                        int sumaPereche = S1 + S2;
+                        System.out.println(Thread.currentThread().getName() +
+                                " -> Suma a două valori pare: " + sumaPereche +
+                                " (valori: " + S1 + ", " + S2 + ")");
+
+                        if (count == 0) {
+                            sumaDoua = sumaPereche;
+                            count = 1;
+                        } else {
+                            sumaDoua += sumaPereche;
+                            System.out.println((sumaDoua - sumaPereche) +
+                                    " + " + sumaPereche + " = " + sumaDoua);
+                            count = 0;
+                        }
+
+                        S1 = 0;
+                        S2 = 0;
+                        k = 0;
+                    }
+                }
+            }
+        } else {
+            for (int i = to; i >= from; i--) {
+                if (tab[i] % 2 == 0) {
+                    if (k == 0) S1 = tab[i];
+                    else S2 = tab[i];
+                    k++;
+
+                    if (k == 2) {
+                        int sumaPereche = S1 + S2;
+                        System.out.println(Thread.currentThread().getName() +
+                                " -> Suma a două valori pare: " + sumaPereche +
+                                " (valori: " + S1 + ", " + S2 + ")");
+
+                        if (count == 0) {
+                            sumaDoua = sumaPereche;
+                            count = 1;
+                        } else {
+                            sumaDoua += sumaPereche;
+                            System.out.println((sumaDoua - sumaPereche) +
+                                    " + " + sumaPereche + " = " + sumaDoua);
+                            count = 0;
+                        }
+
+                        S1 = 0;
+                        S2 = 0;
+                        k = 0;
+                    }
+                }
+            }
+        }
+
+        if (count == 1) {
+            System.out.println(sumaDoua + " = " + sumaDoua);
         }
     }
 }
