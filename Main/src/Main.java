@@ -28,6 +28,15 @@ public class Main {
         t3.start();
         t4.start();
 
+        Thread1 fir1 = new Thread1(0, 99, tab, true);
+        Thread1 fir2 = new Thread1(0, 99, tab, false);
+
+        Thread t5 = new Thread(fir1);
+        Thread t6 = new Thread(fir2);
+
+        fir1.start();
+        fir2.start();
+
     }
 }
 
@@ -167,3 +176,69 @@ class SerafimThread implements Runnable {
         }
     }
 }
+    class Thread1 extends Thread {
+        int from;
+        int to;
+        int tab[];
+        boolean directie;
+
+        public Thread1(int from, int to, int tab[], boolean directie) {
+            this.from = from;
+            this.to = to;
+            this.tab = tab;
+            this.directie = directie;
+        }
+
+        public void run() {
+            int S = 0;
+            int C = 0;
+            int s1 = 0, s2 = 0;
+            int pair = 0;
+
+            if (directie) {
+                for (int i = from; i <= to; i++) {
+                    if(tab[i] % 2 == 0) {
+                        S += tab[i];
+                        C++;
+                    }
+                    if(C == 2) {
+                        pair++;
+                        if(pair == 1) {
+                            s1 = S;
+                            System.out.println(currentThread().getName() + "  s1: " + s1);
+                        } else {
+                            s2 = S;
+                            System.out.println(currentThread().getName() + "  s2: " + s2);
+                            System.out.println(currentThread().getName() + "  Suma celor 2 sume: " + (s1 + s2));
+                            pair = 0;
+                        }
+                        C = 0;
+                        S = 0;
+                    }
+                }
+            } else {
+                for (int i = to; i >= from; i--) {
+                    if(tab[i] % 2 == 0) {
+                        S += tab[i];
+                        C++;
+                    }
+                    if(C == 2) {
+                        pair++;
+                        if(pair == 1) {
+                            s1 = S;
+                            System.out.println(currentThread().getName() + "  s1: " + s1);
+                        } else {
+                            s2 = S;
+                            System.out.println(currentThread().getName() + "  s2: " + s2);
+                            System.out.println(currentThread().getName() + "  Suma celor 2 sume: " + (s1 + s2));
+                            pair = 0;
+                        }
+                        C = 0;
+                        S = 0;
+                    }
+                }
+            }
+        }
+    }
+
+
