@@ -100,7 +100,7 @@ class Suma implements Runnable {
             suma2 += sume[j];
             contor2++;
             if (contor2 == 2) {
-                System.out.println(currentThread().getName() + "  Suma sumelor este  " + suma2);
+                System.out.println(currentThread().getName() + "  Suma sumelor este   " + suma2);
                 suma2 = 0;
                 contor2 = 0;
             }
