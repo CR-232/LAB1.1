@@ -48,7 +48,7 @@ public class Main {
         fir2.join();
 
         // După terminarea tuturor firelor, afișăm autorii litera cu literă
-        String[] autori = {"COCIERU DRAGOS", "COSTRIBA SERAFIM", "MAXIM CRUC"};
+        String[] autori = {"COCIERU DRAGOS", "COSTRIBA SERAFIM", "MAXIM CRUCCCCCC"};
 
         System.out.println("\n>>> Toți firele s-au terminat. Autorii:");
 
