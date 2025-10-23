@@ -1,7 +1,7 @@
 import static java.lang.Thread.currentThread;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         int n = 100;
         int tab[] = new int[n];
 
@@ -12,48 +12,70 @@ public class Main {
 
         System.out.println("\n");
 
-        //  Firele lui Cocieru Dragoș
-        Suma fir = new Suma(0, n - 1, tab, true, "Cocieru Dragoș");
-        Suma sec = new Suma(0, n - 1, tab, false, "Cocieru Dragoș");
+        // Firele lui Cocieru Dragoș
+        Suma fir = new Suma(0, n - 1, tab, true);
+        Suma sec = new Suma(0, n - 1, tab, false);
         Thread t1 = new Thread(fir, "SumaForward");
         Thread t2 = new Thread(sec, "SumaBackward");
 
         t1.start();
         t2.start();
 
-        //  Firele lui Costriba Serafim
-        SerafimThread f1 = new SerafimThread(0, n - 1, tab, false, "Costriba Serafim");
-        SerafimThread f2 = new SerafimThread(0, n - 1, tab, true, "Costriba Serafim");
+        // Firele lui Costriba Serafim
+        SerafimThread f1 = new SerafimThread(0, n - 1, tab, false);
+        SerafimThread f2 = new SerafimThread(0, n - 1, tab, true);
         Thread t3 = new Thread(f1, "Serafim1");
         Thread t4 = new Thread(f2, "Serafim2");
 
         t3.start();
         t4.start();
 
-        //  Firele lui Maxim Cuciuc
-        Thread1 fir1 = new Thread1(0, n - 1, tab, true, "Maxim Cuciuc");
-        Thread1 fir2 = new Thread1(0, n - 1, tab, false, "Maxim Cuciuc");
+        // Firele lui Maxim Cuciuc
+        Thread1 fir1 = new Thread1(0, n - 1, tab, true);
+        Thread1 fir2 = new Thread1(0, n - 1, tab, false);
 
         fir1.start();
         fir2.start();
 
         System.out.println("\n>>> Firele au fost pornite! \n");
+
+        // Așteptăm ca toate firele să se termine
+        t1.join();
+        t2.join();
+        t3.join();
+        t4.join();
+        fir1.join();
+        fir2.join();
+
+        // După terminarea tuturor firelor, afișăm autorii litera cu literă
+        String[] autori = {"COCIERU DRAGOS", "COSTRIBA SERAFIM", "MAXIM CRUC"};
+
+        System.out.println("\n>>> Toți firele s-au terminat. Autorii:");
+
+        for (String autor : autori) {
+            for (char c : autor.toCharArray()) {
+                System.out.print(c);
+                try {
+                    Thread.sleep(100); // 100ms între litere
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            System.out.println(); // linie nouă după fiecare autor
+        }
     }
 }
 
 // ---------------------- CLASA SUMA ----------------------
 class Suma implements Runnable {
-    static int activeThreads = 2; // total fire pentru Cocieru Dragoș
     int from, to, tab[];
     boolean forward;
-    String autor;
 
-    public Suma(int from, int to, int tab[], boolean forward, String autor) {
+    public Suma(int from, int to, int tab[], boolean forward) {
         this.from = from;
         this.to = to;
         this.tab = tab;
         this.forward = forward;
-        this.autor = autor;
     }
 
     public void run() {
@@ -83,32 +105,23 @@ class Suma implements Runnable {
                 contor2 = 0;
             }
         }
-
-        // când firul s-a terminat
-        activeThreads--;
-        if (activeThreads == 0)
-            System.out.println(" Firele lui " + autor + " s-au terminat.");
     }
 }
 
 // ---------------------- CLASA SERAFIMTHREAD ----------------------
 class SerafimThread implements Runnable {
-    static int activeThreads = 2; // total fire pentru Costriba Serafim
     int from, to, tab[];
     boolean revers;
-    String autor;
 
-    public SerafimThread(int from, int to, int[] tab, boolean revers, String autor) {
+    public SerafimThread(int from, int to, int[] tab, boolean revers) {
         this.from = from;
         this.to = to;
         this.tab = tab;
         this.revers = revers;
-        this.autor = autor;
     }
 
     public void run() {
         int S1 = 0, S2 = 0, k = 0, sumaDoua = 0, count = 0;
-
         if (!revers) {
             for (int i = from; i <= to; i++) {
                 if (tab[i] % 2 == 0) {
@@ -150,26 +163,19 @@ class SerafimThread implements Runnable {
                 }
             }
         }
-
-        activeThreads--;
-        if (activeThreads == 0)
-            System.out.println(" Firele lui " + autor + " s-au terminat.");
     }
 }
 
 // ---------------------- CLASA THREAD1 ----------------------
 class Thread1 extends Thread {
-    static int activeThreads = 2; // total fire pentru Maxim Cuciuc
     int from, to, tab[];
     boolean directie;
-    String autor;
 
-    public Thread1(int from, int to, int tab[], boolean directie, String autor) {
+    public Thread1(int from, int to, int tab[], boolean directie) {
         this.from = from;
         this.to = to;
         this.tab = tab;
         this.directie = directie;
-        this.autor = autor;
     }
 
     public void run() {
@@ -216,9 +222,5 @@ class Thread1 extends Thread {
                 }
             }
         }
-
-        activeThreads--;
-        if (activeThreads == 0)
-            System.out.println(" Firele lui " + autor + " s-au terminat.");
     }
 }
