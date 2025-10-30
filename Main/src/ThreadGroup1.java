@@ -8,9 +8,7 @@ public class ThreadGroup1 {
 
         @Override
         public void run() {
-            System.out.println("Thread: " + getName() +
-                    " | Group: " + getThreadGroup().getName() +
-                    " | Priority: " + getPriority());
+            System.out.println("Firul: " + getName() +  " Grupul: " + getThreadGroup().getName() +  " Prioritatea: " + getPriority());
         }
     }
 
