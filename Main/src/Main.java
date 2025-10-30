@@ -50,6 +50,5 @@ public class Main {
         Th3_g2.start();
 
         System.out.println("\n Structura ThreadGroup");
-        sys.list();
     }
 }
