@@ -47,7 +47,7 @@ public class ThreadGroup1 {
         ThB.start();
         g3.list();
 
-        System.out.println("\n--- Structura completă a grupurilor ---");
+        System.out.println("\n Structura grupurilor ");
         sys.list();
     }
 }
