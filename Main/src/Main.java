@@ -28,8 +28,8 @@ public class Main {
         while (Th3.isAlive() || Th4.isAlive())
             Thread.sleep(50);
 
-        afisareCuPauza("Prenume: Dragos");
-        afisareCuPauza("Nume: Cocieru");
+        afisareCuPauza("Prenume: Dragos, Maxim");
+        afisareCuPauza("Nume: Cocieru, Cuciuc");
         afisareCuPauza("Disciplina: Programarea concurenta si paralela");
         afisareCuPauza("Grupa: CR-232");
     }
