@@ -60,7 +60,7 @@ public class Main {
             while (Th4.isAlive())
                 try { Thread.sleep(50); } catch (Exception e) {}
 
-            Main.afisare("Prenume: Dragos, Max");
+            Main.afisare(currentThread().getName() + " Prenume: Dragos, Max");
         }
     }
 
@@ -86,7 +86,7 @@ public class Main {
                 try { Thread.sleep(1); } catch (Exception e) {}
             }
 
-            Main.afisare("Nume: Cocieru, Cuciuc");
+            Main.afisare(currentThread().getName() + " Nume: Cocieru, Cuciuc");
         }
     }
 
