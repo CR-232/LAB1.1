@@ -102,7 +102,7 @@ public class Main {
             while (Th1.isAlive())
                 try { Thread.sleep(50); } catch (Exception e) {}
 
-            Main.afisare(currentThread().getName() + " Disciplina: Programare Concurenta si Distribuita");
+            Main.afisare(currentThread().getName() + " Disciplina: Programare Concurenta si Distribuita1");
         }
     }
 
