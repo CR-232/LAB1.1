@@ -1,5 +1,7 @@
 public class Main {
+
     public static void main(String[] args) {
+
         int n = 1000;
         int tab[] = new int[n];
         for (int i = 0; i < n; i++)
@@ -21,17 +23,18 @@ public class Main {
         Th4.start();
 
         try {
-            Th2.join();
+            Thread.sleep(3000);
             Th2.interrupt();
 
-            Th4.join();
+            Thread.sleep(1500);
             Th4.interrupt();
 
-            Th1.join();
+            Thread.sleep(1500);
             Th1.interrupt();
 
-            Th3.join();
+            Thread.sleep(1500);
             Th3.interrupt();
+
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -58,8 +61,9 @@ class FirCocieruStart extends Thread {
             try { Thread.sleep(2); } catch (Exception ignored) {}
         }
         System.out.println();
+
         while (!isInterrupted()) {
-            try { Thread.sleep(100); } catch (InterruptedException e) {
+            try { Thread.sleep(200); } catch (InterruptedException e) {
                 Main.afisareCuPauza("Disciplina: Programare Concurenta si Distribuita");
                 break;
             }
@@ -79,8 +83,9 @@ class FirCocieruSfarsit extends Thread {
             try { Thread.sleep(2); } catch (Exception ignored) {}
         }
         System.out.println();
+
         while (!isInterrupted()) {
-            try { Thread.sleep(100); } catch (InterruptedException e) {
+            try { Thread.sleep(200); } catch (InterruptedException e) {
                 Main.afisareCuPauza("Grupa: CR-232");
                 break;
             }
@@ -96,6 +101,7 @@ class Thread1 extends Thread {
     }
     public void run() {
         int S = 0, C = 0, s1 = 0, s2 = 0, pair = 0;
+
         if (directie) {
             for (int i = from; i <= to; i++) {
                 if (tab[i] % 2 == 0) { S += tab[i]; C++; }
@@ -127,8 +133,9 @@ class Thread1 extends Thread {
                 try { Thread.sleep(1); } catch (Exception ignored) {}
             }
         }
+
         while (!isInterrupted()) {
-            try { Thread.sleep(100); } catch (InterruptedException e) {
+            try { Thread.sleep(200); } catch (InterruptedException e) {
                 if (directie)
                     Main.afisareCuPauza("Prenume: Dragos");
                 else
