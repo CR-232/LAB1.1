@@ -86,7 +86,7 @@ public class Main {
                 try { Thread.sleep(1); } catch (Exception e) {}
             }
 
-            Main.afisare("Nume: Cocieru, Cuciuc");
+            Main.afisare(currentThread().getName() + " Nume: Cocieru, Cuciuc");
         }
     }
 
@@ -102,7 +102,7 @@ public class Main {
             while (Th1.isAlive())
                 try { Thread.sleep(50); } catch (Exception e) {}
 
-            Main.afisare("Disciplina: Programare Concurenta si Distribuita");
+            Main.afisare(currentThread().getName() + " Disciplina: Programare Concurenta si Distribuita");
         }
     }
 
