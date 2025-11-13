@@ -1,23 +1,20 @@
 public class Main {
 
+    static int n = 1000;
+    static int[] tabCalc = new int[n];
+    static int[] tabPar = new int[n];
+
+    static FirCalcInce Th1 = new FirCalcInce();
+    static FirCalcSfar Th2 = new FirCalcSfar();
+    static FirParcurgereCrescator Th3 = new FirParcurgereCrescator();
+    static FirParcurgereDesc Th4 = new FirParcurgereDesc();
+
     public static void main(String[] args) {
 
-        int n = 1000;
-        int tab[] = new int[n];
-        for (int i = 0; i < n; i++)
-            tab[i] = (int) (Math.random() * 100);
-
-        Thread1 Th1 = new Thread1(0, n - 1, tab, true);
-        Thread1 Th2 = new Thread1(0, n - 1, tab, false);
-
-        FirParcurgere Th3 = new FirParcurgere(
-                100, 500, tab, true,
-                "Disciplina: Programare Concurenta si Distribuita"
-        );
-        FirParcurgere Th4 = new FirParcurgere(
-                300, 700, tab, false,
-                "Grupa: CR-232"
-        );
+        for (int i = 0; i < n; i++) {
+            tabCalc[i] = (int) (Math.random() * 1000);
+            tabPar[i] = i;
+        }
 
         Th1.setName("Th1");
         Th2.setName("Th2");
@@ -28,133 +25,100 @@ public class Main {
         Th2.start();
         Th3.start();
         Th4.start();
-
-        try {
-            Thread.sleep(3000);
-            Th2.interrupt();
-
-            Thread.sleep(1500);
-            Th4.interrupt();
-
-            Thread.sleep(1500);
-            Th1.interrupt();
-
-            Thread.sleep(1500);
-            Th3.interrupt();
-
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
     }
 
-    public static void afisareCuPauza(String text) {
+    public static void afisare(String text) {
         for (char c : text.toCharArray()) {
             System.out.print(c);
-            try { Thread.sleep(100); } catch (Exception ignored) {}
+            try { Thread.sleep(100); } catch (Exception e) {}
         }
         System.out.println();
     }
-}
 
-class FirParcurgere extends Thread {
-    int from, to;
-    int tab[];
-    boolean directie;
-    String mesajFinal;
+    static class FirCalcInce extends Thread {
+        public void run() {
 
-    public FirParcurgere(int from, int to, int tab[], boolean directie, String mesajFinal) {
-        this.from = from;
-        this.to = to;
-        this.tab = tab;
-        this.directie = directie;
-        this.mesajFinal = mesajFinal;
-    }
+            int S = 0, C = 0, s1 = 0, s2 = 0, pair = 0;
 
-    public void run() {
+            for (int i = 0; i < n; i++) {
+                if (tabCalc[i] % 2 == 0) { S += tabCalc[i]; C++; }
 
-        if (directie) {
-            System.out.println(getName() + " → Parcurgere crescătoare ["+from+".."+to+"]:");
-            for (int i = from; i <= to; i++) {
-                System.out.print(tab[i] + " ");
-                try { Thread.sleep(2); } catch (Exception ignored) {}
-            }
-        } else {
-            System.out.println(getName() + " → Parcurgere descrescătoare ["+to+".."+from+"]:");
-            for (int i = to; i >= from; i--) {
-                System.out.print(tab[i] + " ");
-                try { Thread.sleep(2); } catch (Exception ignored) {}
-            }
-        }
-
-        System.out.println();
-
-        while (!isInterrupted()) {
-            try { Thread.sleep(200); }
-            catch (InterruptedException e) {
-                Main.afisareCuPauza(mesajFinal);
-                break;
-            }
-        }
-    }
-}
-
-class Thread1 extends Thread {
-    int from, to, tab[];
-    boolean directie;
-
-    public Thread1(int from, int to, int tab[], boolean directie) {
-        this.from = from;
-        this.to = to;
-        this.tab = tab;
-        this.directie = directie;
-    }
-
-    public void run() {
-
-        int S = 0, C = 0, s1 = 0, s2 = 0, pair = 0;
-
-        if (directie) {
-            for (int i = from; i <= to; i++) {
-                if (tab[i] % 2 == 0) { S += tab[i]; C++; }
                 if (C == 2) {
                     pair++;
                     if (pair == 1) s1 = S;
                     else {
                         s2 = S;
-                        System.out.println(getName()+" → Suma = " + (s1+s2));
+                        System.out.println(getName() + " → Suma = " + (s1 + s2));
                         pair = 0;
                     }
-                    C = 0; S = 0;
+                    S = 0;
+                    C = 0;
                 }
-                try { Thread.sleep(1); } catch (Exception ignored) {}
+                try { Thread.sleep(1); } catch (Exception e) {}
             }
+
+            while (Th4.isAlive())
+                try { Thread.sleep(50); } catch (Exception e) {}
+
+            Main.afisare("Prenume: Dragos, Max");
         }
-        else {
-            for (int i = to; i >= from; i--) {
-                if (tab[i] % 2 == 0) { S += tab[i]; C++; }
+    }
+
+    static class FirCalcSfar extends Thread {
+        public void run() {
+
+            int S = 0, C = 0, s1 = 0, s2 = 0, pair = 0;
+
+            for (int i = n - 1; i >= 0; i--) {
+                if (tabCalc[i] % 2 == 0) { S += tabCalc[i]; C++; }
+
                 if (C == 2) {
                     pair++;
                     if (pair == 1) s1 = S;
                     else {
                         s2 = S;
-                        System.out.println(getName()+" → Suma = " + (s1+s2));
+                        System.out.println(getName() + " → Suma = " + (s1 + s2));
                         pair = 0;
                     }
-                    C = 0; S = 0;
+                    S = 0;
+                    C = 0;
                 }
-                try { Thread.sleep(1); } catch (Exception ignored) {}
+                try { Thread.sleep(1); } catch (Exception e) {}
             }
-        }
 
-        while (!isInterrupted()) {
-            try { Thread.sleep(200); }
-            catch (InterruptedException e) {
-                if (directie)
-                    Main.afisareCuPauza("Prenume: Dragos, Max");
-                else
-                    Main.afisareCuPauza("Nume: Cocieru, Cuciuc");
-                break;
+            Main.afisare("Nume: Cocieru, Cuciuc");
+        }
+    }
+
+    static class FirParcurgereCrescator extends Thread {
+        public void run() {
+
+            for (int i = 100; i <= 500; i++) {
+                System.out.print(tabPar[i] + " ");
+                try { Thread.sleep(2); } catch (Exception e) {}
             }
+            System.out.println();
+
+            while (Th1.isAlive())
+                try { Thread.sleep(50); } catch (Exception e) {}
+
+            Main.afisare("Disciplina: Programare Concurenta si Distribuita");
+        }
+    }
+
+    static class FirParcurgereDesc extends Thread {
+        public void run() {
+
+            for (int i = 700; i >= 300; i--) {
+                System.out.print(tabPar[i] + " ");
+                try { Thread.sleep(2); } catch (Exception e) {}
+            }
+            System.out.println();
+
+            while (Th2.isAlive())
+                try { Thread.sleep(50); } catch (Exception e) {}
+
+            Main.afisare("Grupa: CR-232");
         }
     }
 }
