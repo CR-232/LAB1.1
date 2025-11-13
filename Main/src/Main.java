@@ -60,7 +60,7 @@ public class Main {
             while (Th4.isAlive())
                 try { Thread.sleep(50); } catch (Exception e) {}
 
-            Main.afisare("Prenume: Dragos, Max");
+            Main.afisare(currentThread().getName() + " Prenume: Dragos, Max");
         }
     }
 
@@ -118,7 +118,7 @@ public class Main {
             while (Th2.isAlive())
                 try { Thread.sleep(50); } catch (Exception e) {}
 
-            Main.afisare("Grupa: CR-232");
+            Main.afisare(currentThread().getName() +"Grupa: CR-232");
         }
     }
 }
