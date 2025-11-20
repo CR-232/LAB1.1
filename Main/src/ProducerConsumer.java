@@ -53,7 +53,7 @@ class Producer extends Thread {
     }
 
     private int genNrPar() {
-        return 10 + random.nextInt(61) * 2;
+        return random.nextInt(51) * 2;
     }
 
     @Override
@@ -104,7 +104,7 @@ class Consumer extends Thread {
         }
 
         System.out.println("Consumatorul " + id +
-                " s-a indestulat cu " + consumateLocal + " obiecte si se opreste.");
+                " s-a saturat cu " + consumateLocal + " obiecte si se opreste.");
     }
 }
 
