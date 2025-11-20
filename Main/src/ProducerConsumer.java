@@ -9,9 +9,6 @@ public class ProducerConsumer {
     public static final int F = 2;
 
     public static void main(String[] args) {
-
-
-
         int ProdusTotal = Y * Z;
 
         Depozit depozit = new Depozit(D, ProdusTotal);
@@ -38,8 +35,6 @@ public class ProducerConsumer {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
-
-
     }
 }
 
@@ -61,7 +56,7 @@ class Depozit {
         if (produse >= ProdusTotal) return false;
 
         while (count == buffer.length) {
-            System.out.println(">>> Depozitul este PLIN. Producatorul " + idProducator + " asteapta...");
+            System.out.println(" Depozitul este plin, producatorul " + idProducator + " asteapta ");
             try { wait(); } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 return false;
@@ -75,7 +70,6 @@ class Depozit {
 
         System.out.println("Producatorul " + idProducator + " a produs: " + valoare +
                 " (in depozit: " + count + ", produse total: " + produse + ")");
-
         if (produse == ProdusTotal) finisat = true;
 
         notifyAll();
@@ -84,15 +78,13 @@ class Depozit {
 
     public synchronized Integer consuma(int idConsumator) {
         while (count == 0 && !finisat) {
-            System.out.println("<<< Depozitul este GOL. Consumatorul " + idConsumator + " asteapta...");
+            System.out.println("Depozitul este gol, consumatorul " + idConsumator + " asteapta");
             try { wait(); } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 return null;
             }
         }
-
         if (count == 0 && finisat) return null;
-
         count--;
         int valoare = buffer[count];
         consumate++;
@@ -108,13 +100,13 @@ class Depozit {
 class Producator extends Thread {
     private final Depozit depozit;
     private final int id;
-    private final int batch;
+    private final int counter;
     private final Random random = new Random();
 
-    public Producator(Depozit d, int id, int batch) {
+    public Producator(Depozit d, int id, int counter) {
         this.depozit = d;
         this.id = id;
-        this.batch = batch;
+        this.counter = counter;
     }
 
     private int genNrPar() {
@@ -124,7 +116,7 @@ class Producator extends Thread {
     @Override
     public void run() {
         while (true) {
-            for (int i = 0; i < batch; i++) {
+            for (int i = 0; i < counter; i++) {
                 int val = genNrPar();
                 boolean success = depozit.produce(val, id);
                 if (!success) {
