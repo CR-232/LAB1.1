@@ -2,27 +2,27 @@ import java.util.Random;
 
 public class ProducerConsumer {
 
-    public static final int X = 2;
-    public static final int Y = 3;
-    public static final int Z = 11;
-    public static final int D = 8;
-    public static final int F = 2;
+    public static final int nrProd = 2;
+    public static final int nrCons = 3;
+    public static final int nrObj = 11;
+    public static final int dimDep = 8;
+    public static final int prod = 2;
 
     public static void main(String[] args) {
-        int ProdusTotal = Y * Z;
+        int ProdusTotal = nrCons * nrObj;
 
-        Depozit depozit = new Depozit(D, ProdusTotal);
+        Depozit depozit = new Depozit(dimDep, ProdusTotal);
 
-        Producer[] Produceri = new Producer[X];
-        Consumer[] Consumeri = new Consumer[Y];
+        Producer[] Produceri = new Producer[nrProd];
+        Consumer[] Consumeri = new Consumer[nrCons];
 
-        for (int i = 0; i < X; i++) {
-            Produceri[i] = new Producer(depozit, i + 1, F);
+        for (int i = 0; i < nrProd; i++) {
+            Produceri[i] = new Producer(depozit, i + 1, prod);
             Produceri[i].setName("Prod-" + (i + 1));
         }
 
-        for (int i = 0; i < Y; i++) {
-            Consumeri[i] = new Consumer(depozit, i + 1, Z);
+        for (int i = 0; i < nrCons; i++) {
+            Consumeri[i] = new Consumer(depozit, i + 1, nrObj);
             Consumeri[i].setName("Cons-" + (i + 1));
         }
 
