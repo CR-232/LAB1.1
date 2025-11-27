@@ -11,13 +11,10 @@ public class ProducerConsumer {
     public static final int F = 2;
 
     public static void main(String[] args) {
-
-        System.out.println("=== Pornire simulare producător-consumator (varianta fără Swing) ===\n");
-
-        runSimulation();
+        run();
     }
 
-    private static void runSimulation() {
+    private static void run() {
         int totalDeProduse = Y * Z;
 
         DepozitPool depozit = new DepozitPool(D, totalDeProduse);
@@ -25,12 +22,12 @@ public class ProducerConsumer {
 
         for (int i = 0; i < X; i++) {
             int producerId = i + 1;
-            executor.submit(new ProducatorPool(depozit, producerId, F));
+            executor.submit(new ProducerPool(depozit, producerId, F));
         }
 
         for (int i = 0; i < Y; i++) {
             int consumatorId = i + 1;
-            executor.submit(new ConsumatorPool(depozit, consumatorId, Z));
+            executor.submit(new ConsumerPool(depozit, consumatorId, Z));
         }
 
         executor.shutdown();
@@ -40,7 +37,7 @@ public class ProducerConsumer {
                 while (!executor.isTerminated()) {
                     Thread.sleep(100);
                 }
-                System.out.println("\nToate obiectele au fost produse si consumate. Program terminat.\n");
+                System.out.println("\nProgram terminat.\n");
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
@@ -48,7 +45,80 @@ public class ProducerConsumer {
     }
 }
 
+class ProducerPool extends Thread {
+    private final DepozitPool depozit;
+    private final int id;
+    private final int gram;
+    private final Random random = new Random();
 
+    public ProducerPool(DepozitPool d, int id, int gram) {
+        this.depozit = d;
+        this.id = id;
+        this.gram = gram;
+    }
+
+    private int genNrPar() {
+        return 10 + random.nextInt(61) * 2;
+    }
+
+    @Override
+    public void run() {
+        while (true) {
+            for (int i = 0; i < gram; i++) {
+                int val = genNrPar();
+                boolean ok = depozit.produce(val, id);
+                if (!ok) {
+                    System.out.println("Producatorul " + id + " se opreste.");
+                    return;
+                }
+                try {
+                    Thread.sleep(random.nextInt(400));
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    return;
+                }
+            }
+        }
+    }
+}
+
+
+class ConsumerPool extends Thread {
+    private final DepozitPool depozit;
+    private final int id;
+    private final int deConsum;
+    private final Random random = new Random();
+
+    public ConsumerPool(DepozitPool d, int id, int deConsum) {
+        this.depozit = d;
+        this.id = id;
+        this.deConsum = deConsum;
+    }
+
+    @Override
+    public void run() {
+        int consumate = 0;
+
+        while (consumate < deConsum) {
+            Integer val = depozit.consuma(id);
+            if (val == null) break;
+
+            System.out.println("Consumatorul " + id + " a consumat: " + val +
+                    " (consumat local: " + (consumate + 1) + "/" + deConsum + ")");
+
+            consumate++;
+
+            try {
+                Thread.sleep(random.nextInt(500));
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            }
+        }
+
+        System.out.println("Consumatorul " + id + " s-a saturat cu " + consumate + "obiecte");
+    }
+}
 
 class DepozitPool {
     private final int[] buffer;
@@ -67,7 +137,7 @@ class DepozitPool {
         if (produse >= totalDeProduse) return false;
 
         while (count == buffer.length) {
-            System.out.println(">>> Depozitul este PLIN. Producatorul " + idProducator + " asteapta...");
+            System.out.println("Depozit plin. Producatorul " + idProducator + " asteapta");
             try {
                 wait();
             } catch (InterruptedException e) {
@@ -81,8 +151,7 @@ class DepozitPool {
         count++;
         produse++;
 
-        System.out.println("Producatorul " + idProducator + " a produs: " + valoare +
-                " (in depozit: " + count + ", produse total: " + produse + ")");
+        System.out.println("Producatorul " + idProducator + " a produs: " + valoare + " depozitul are: " + count + ", produse total: " + produse);
 
         if (produse == totalDeProduse) terminat = true;
 
@@ -108,83 +177,5 @@ class DepozitPool {
 
         notifyAll();
         return valoare;
-    }
-}
-
-
-
-class ProducatorPool implements Runnable {
-    private final DepozitPool depozit;
-    private final int id;
-    private final int batchSize;
-    private final Random random = new Random();
-
-    public ProducatorPool(DepozitPool d, int id, int batchSize) {
-        this.depozit = d;
-        this.id = id;
-        this.batchSize = batchSize;
-    }
-
-    private int genereazaNumarPar() {
-        return 10 + random.nextInt(61) * 2; // numere pare
-    }
-
-    @Override
-    public void run() {
-        while (true) {
-            for (int i = 0; i < batchSize; i++) {
-                int val = genereazaNumarPar();
-                boolean ok = depozit.produce(val, id);
-                if (!ok) {
-                    System.out.println("Producatorul " + id + " se opreste (nu mai sunt necesare obiecte).");
-                    return;
-                }
-                try {
-                    Thread.sleep(random.nextInt(400));
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    return;
-                }
-            }
-        }
-    }
-}
-
-
-class ConsumatorPool implements Runnable {
-    private final DepozitPool depozit;
-    private final int id;
-    private final int deConsum;
-    private final Random random = new Random();
-
-    public ConsumatorPool(DepozitPool d, int id, int deConsum) {
-        this.depozit = d;
-        this.id = id;
-        this.deConsum = deConsum;
-    }
-
-    @Override
-    public void run() {
-        int consumateLocal = 0;
-
-        while (consumateLocal < deConsum) {
-            Integer val = depozit.consuma(id);
-            if (val == null) break;
-
-            System.out.println("Consumatorul " + id + " a consumat: " + val +
-                    " (consumat local: " + (consumateLocal + 1) + "/" + deConsum + ")");
-
-            consumateLocal++;
-
-            try {
-                Thread.sleep(random.nextInt(500));
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                break;
-            }
-        }
-
-        System.out.println("Consumatorul " + id +
-                " s-a indestulat cu " + consumateLocal + " obiecte si se opreste.");
     }
 }
