@@ -58,7 +58,7 @@ class ProducerPool extends Thread {
     }
 
     private int genNrPar() {
-        return 10 + random.nextInt(61) * 2;
+        return random.nextInt(51) * 2;
     }
 
     @Override
