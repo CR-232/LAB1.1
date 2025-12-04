@@ -4,30 +4,30 @@ import java.util.concurrent.Executors;
 
 public class ProducerConsumer {
 
-    public static final int X = 2;
-    public static final int Y = 3;
-    public static final int Z = 11;
-    public static final int D = 8;
-    public static final int F = 2;
+    public static final int nrProd = 2;
+    public static final int nrCons = 3;
+    public static final int nrObj = 11;
+    public static final int dimDep = 8;
+    public static final int prod = 2;
 
     public static void main(String[] args) {
         run();
     }
 
     private static void run() {
-        int totalDeProduse = Y * Z;
+        int totalDeProduse = nrCons * nrObj;
 
-        DepozitPool depozit = new DepozitPool(D, totalDeProduse);
-        ExecutorService executor = Executors.newFixedThreadPool(X + Y);
+        DepozitPool depozit = new DepozitPool(dimDep, totalDeProduse);
+        ExecutorService executor = Executors.newFixedThreadPool(nrProd + nrCons);
 
-        for (int i = 0; i < X; i++) {
+        for (int i = 0; i < nrProd; i++) {
             int producerId = i + 1;
-            executor.submit(new ProducerPool(depozit, producerId, F));
+            executor.submit(new ProducerPool(depozit, producerId, prod));
         }
 
-        for (int i = 0; i < Y; i++) {
+        for (int i = 0; i < nrCons; i++) {
             int consumatorId = i + 1;
-            executor.submit(new ConsumerPool(depozit, consumatorId, Z));
+            executor.submit(new ConsumerPool(depozit, consumatorId, nrObj));
         }
 
         executor.shutdown();
