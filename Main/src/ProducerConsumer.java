@@ -45,7 +45,8 @@ public class ProducerConsumer {
     }
 }
 
-class ProducerPool extends Thread {
+class ProducerPool implements Runnable {
+
     private final DepozitPool depozit;
     private final int id;
     private final int gram;
@@ -83,7 +84,7 @@ class ProducerPool extends Thread {
 }
 
 
-class ConsumerPool extends Thread {
+class ConsumerPool implements Runnable {
     private final DepozitPool depozit;
     private final int id;
     private final int deConsum;
