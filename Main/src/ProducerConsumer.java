@@ -5,7 +5,6 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class ProducerConsumer {
 
-    // Valorile pentru Varianta 1
     static final int X = 2;  // producători
     static final int Y = 3;  // consumatori
     static final int Z = 40; // număr total obiecte
