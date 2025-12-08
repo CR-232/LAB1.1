@@ -5,12 +5,10 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class ProducerConsumer {
 
-    static final int X = 2;
+    static final int X = 2;  // producatorii
     static final int Y = 3;  // consumatori
     static final int Z = 40; // număr total obiecte
     static final int D = 8;  // dimensiune depozit
-
-    // Depozitul sincronizat
     static class Depozit {
 
         private final Deque<Integer> buffer = new ArrayDeque<>(D);
@@ -23,25 +21,21 @@ public class ProducerConsumer {
         private int totalConsumate = 0;
         private boolean gata = false;
 
-        // Producătorii produc NUMERE PARE
         private int nextEven = 2;
 
         public void produce(String name) throws InterruptedException {
             lock.lock();
             try {
-                // Oprește dacă am produs Z obiecte
                 if (totalProduse >= Z) {
                     gata = true;
                     notEmpty.signalAll();
                     return;
                 }
 
-                // Producătorii NU pot produce până depozitul nu devine gol
                 while (!buffer.isEmpty()) {
                     notFull.await();
                 }
 
-                // Produc D obiecte (aici D=8 – enunțul cere umplerea depozitului)
                 for (int i = 0; i < D; i++) {
                     if (totalProduse >= Z) break;
 
@@ -63,7 +57,6 @@ public class ProducerConsumer {
         public void consume(String name) throws InterruptedException {
             lock.lock();
             try {
-                // Consumatorii nu pot consuma până depozitul nu e plin
                 while (buffer.size() < D && !gata) {
                     notEmpty.await();
                 }
@@ -72,7 +65,6 @@ public class ProducerConsumer {
                     return;
                 }
 
-                // Consumă până depozitul devine gol
                 while (!buffer.isEmpty()) {
                     int val = buffer.removeFirst();
                     System.out.println(name + " a consumat: " + val);
@@ -93,7 +85,6 @@ public class ProducerConsumer {
         }
     }
 
-    // Fire producător
     static class Producator extends Thread {
         private final Depozit depozit;
 
@@ -114,7 +105,6 @@ public class ProducerConsumer {
         }
     }
 
-    // Fire consumator
     static class Consumator extends Thread {
         private final Depozit depozit;
 
