@@ -46,7 +46,7 @@ public class ProducerConsumer {
                     totalProduse++;
                 }
 
-                System.out.println(">>> Depozitul este PLIN: " + buffer.size() + "/" + D);
+                System.out.println(" Depozitul este PLIN: " + buffer.size() + "/" + D);
                 notEmpty.signalAll();
 
             } finally {
@@ -76,7 +76,7 @@ public class ProducerConsumer {
                     }
                 }
 
-                System.out.println("<<< Depozitul este GOL");
+                System.out.println(" Depozitul este GOL");
                 notFull.signalAll();
 
             } finally {
@@ -144,6 +144,6 @@ public class ProducerConsumer {
         for (Thread p : producatori) p.join();
         for (Thread c : consumatori) c.join();
 
-        System.out.println("\n=== FINALIZAT: 40 obiecte produse și consumate corect ===");
+        System.out.println("\n FINALIZAT: 40 obiecte produse și consumate corect ");
     }
 }
