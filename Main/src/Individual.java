@@ -1,47 +1,50 @@
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class Individual {
 
-    public static final int nrClient = 15;
-    public static final int nrScaune = 4;
+    public static final int NR_CLIENTI = 15;
+    public static final int NR_SCAUNE = 4;
 
     public static void main(String[] args) {
 
-        Frizerie shop = new Frizerie(nrScaune, nrClient);
+        Frizerie frizerie = new Frizerie(NR_SCAUNE, NR_CLIENTI);
         ExecutorService pool = Executors.newFixedThreadPool(6);
 
-        pool.submit(new Frizer(shop));
+        pool.submit(new Frizer(frizerie));
 
-        for (int i = 1; i <= nrClient; i++) {
+        for (int i = 1; i <= NR_CLIENTI; i++) {
             int id = i;
             try {
                 Thread.sleep(new Random().nextInt(600));
-            } catch (Exception ignored) {}
-            pool.submit(new Client(shop, id));
+            } catch (InterruptedException ignored) {
+            }
+            pool.submit(new Client(frizerie, id));
         }
 
         pool.shutdown();
     }
 }
 
+/* ================== FRIZERIE ================== */
+
 class Frizerie {
 
     private final int nrScaune;
     private final int totalClienti;
 
-    private final AtomicInteger clientiProcesati = new AtomicInteger(0);
-
     private int clientiAsteptare = 0;
-    private int clientiServiti = 0;
+    private int clientiProcesati = 0;
     private boolean activ = true;
 
-    private final Semaphore clientiGata = new Semaphore(0);
-    private final Semaphore frizerGata = new Semaphore(0);
-    private final Semaphore mutex = new Semaphore(1);
+    private final ReentrantLock lock = new ReentrantLock(true);
+
+    private final Condition clientiDisponibili = lock.newCondition();
+    private final Condition scaunLiber = lock.newCondition();
+    private final Condition frizerDisponibil = lock.newCondition();
 
     public Frizerie(int nrScaune, int totalClienti) {
         this.nrScaune = nrScaune;
@@ -49,107 +52,116 @@ class Frizerie {
     }
 
     public void intrareClient(int id) throws InterruptedException {
-
-        mutex.acquire();
-
-        if (clientiAsteptare >= nrScaune) {
-            System.out.println("Clientul " + id + " pleacă – sala este plină.");
-
-            if (clientiProcesati.incrementAndGet() == totalClienti) {
-                activ = false;
-                clientiGata.release();
+        lock.lock();
+        try {
+            while (clientiAsteptare >= nrScaune && activ) {
+                scaunLiber.await();
             }
 
-            mutex.release();
-            return;
+            if (!activ) {
+                System.out.println("Clientul " + id + " pleacă – frizeria e închisă.");
+                return;
+            }
+
+            clientiAsteptare++;
+            System.out.println("Clientul " + id +
+                    " a intrat. În așteptare: " + clientiAsteptare);
+
+            clientiDisponibili.signal();
+
+            frizerDisponibil.await();
+
+            System.out.println("Clientul " + id + " a fost tuns și pleacă.");
+
+        } finally {
+            lock.unlock();
         }
-
-        clientiAsteptare++;
-        System.out.println("Clientul " + id + " a intrat. În așteptare: " + clientiAsteptare);
-
-        clientiGata.release();
-        mutex.release();
-
-        frizerGata.acquire();
-
-        System.out.println("Clientul " + id + " a fost tuns și pleacă.");
     }
 
     public boolean tunde() throws InterruptedException {
+        lock.lock();
+        try {
+            while (clientiAsteptare == 0 && activ) {
+                clientiDisponibili.await();
+            }
 
-        clientiGata.acquire();
+            if (!activ && clientiAsteptare == 0)
+                return false;
 
-        mutex.acquire();
+            clientiAsteptare--;
+            System.out.println("Frizerul tunde un client. În așteptare: "
+                    + clientiAsteptare);
 
-        if (!activ && clientiAsteptare == 0) {
-            mutex.release();
-            return false;
+            scaunLiber.signal();
+
+        } finally {
+            lock.unlock();
         }
-
-        if (clientiAsteptare == 0) {
-            mutex.release();
-            return activ;
-        }
-
-        clientiAsteptare--;
-        System.out.println("Bărbierul tunde un client. În așteptare rămân: " + clientiAsteptare);
-
-        mutex.release();
 
         Thread.sleep(1200);
 
-        mutex.acquire();
+        lock.lock();
+        try {
+            clientiProcesati++;
+            System.out.println("Frizerul a terminat tunsul. Total serviți: "
+                    + clientiProcesati);
 
-        clientiServiti++;
-        System.out.println("Bărbierul a terminat tunsul. (Total serviți: " + clientiServiti + ")");
+            frizerDisponibil.signal();
 
-        if (clientiProcesati.incrementAndGet() == totalClienti) {
-            activ = false;
+            if (clientiProcesati == totalClienti) {
+                activ = false;
+                clientiDisponibili.signalAll();
+                scaunLiber.signalAll();
+            }
+
+            return activ || clientiAsteptare > 0;
+
+        } finally {
+            lock.unlock();
         }
-
-        mutex.release();
-        frizerGata.release();
-
-        return activ || clientiAsteptare > 0;
     }
 }
 
+/* ================== FRIZER ================== */
+
 class Frizer implements Runnable {
 
-    private final Frizerie shop;
+    private final Frizerie frizerie;
 
-    public Frizer(Frizerie shop) {
-        this.shop = shop;
+    public Frizer(Frizerie frizerie) {
+        this.frizerie = frizerie;
     }
 
     @Override
     public void run() {
         try {
-            while (shop.tunde()) {
+            while (frizerie.tunde()) {
                 Thread.sleep(300);
             }
             System.out.println("Frizerul închide frizeria.");
-        } catch (Exception e) {
+        } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
     }
 }
 
+/* ================== CLIENT ================== */
+
 class Client implements Runnable {
 
-    private final Frizerie shop;
+    private final Frizerie frizerie;
     private final int id;
 
-    public Client(Frizerie shop, int id) {
-        this.shop = shop;
+    public Client(Frizerie frizerie, int id) {
+        this.frizerie = frizerie;
         this.id = id;
     }
 
     @Override
     public void run() {
         try {
-            shop.intrareClient(id);
-        } catch (Exception e) {
+            frizerie.intrareClient(id);
+        } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
     }
