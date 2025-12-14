@@ -29,8 +29,6 @@ public class Individual {
     }
 }
 
-/* ================== FRIZERIE ================== */
-
 class Frizerie {
 
     private final int nrScaune;
@@ -122,8 +120,6 @@ class Frizerie {
     }
 }
 
-/* ================== FRIZER ================== */
-
 class Frizer implements Runnable {
 
     private final Frizerie frizerie;
@@ -144,8 +140,6 @@ class Frizer implements Runnable {
         }
     }
 }
-
-/* ================== CLIENT ================== */
 
 class Client implements Runnable {
 
